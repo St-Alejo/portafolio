@@ -126,7 +126,7 @@ export function HeroSection() {
             <div className="relative w-full max-w-md aspect-square">
               <div className="absolute inset-0 gradient-purple-blue rounded-full blur-3xl opacity-30 animate-pulse" />
               <img
-                src=""
+                src="R.jpeg"
                 alt="Steven Ortega"
                 className="relative z-10 w-full h-full object-cover rounded-2xl neon-glow-purple"
               />

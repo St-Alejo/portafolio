@@ -157,7 +157,7 @@ export function BikeController() {
       force.add(brakeForce)
     }
 
-    const steeringFactor = Math.min(currentSpeed / 10, 1) // More responsive at higher speeds
+    const steeringFactor = Math.min(currentSpeed / 10, 1)
 
     if (inputLeft && currentSpeed > 1) {
       const angularVel = body.angvel()
@@ -216,7 +216,6 @@ export function BikeController() {
 
     const euler = new Euler().setFromQuaternion(quat)
     if (Math.abs(euler.x) > 0.5 || Math.abs(euler.z) > 0.5) {
-      // Bike is tipping, apply corrective torque
       body.setAngvel({ x: 0, y: body.angvel().y, z: 0 }, true)
     }
 
@@ -239,11 +238,33 @@ export function BikeController() {
       enabledRotations={[false, true, false]}
     >
       <group ref={groupRef}>
-        {/* Placeholder bike model - TODO: Replace with actual GLTF model from /assets/models/motorbike.glb */}
+        {/* Cuerpo principal de la moto - más aerodinámico */}
         <mesh castShadow>
-          <boxGeometry args={[1, 0.8, 2]} />
+          <boxGeometry args={[1.2, 0.6, 2.2]} />
           <meshStandardMaterial
             color="#a855f7"
+            emissive="#7c3aed"
+            emissiveIntensity={0.4}
+            metalness={0.9}
+            roughness={0.1}
+          />
+        </mesh>
+
+        {/* Asiento */}
+        <mesh position={[0, 0.5, 0.3]} castShadow>
+          <boxGeometry args={[0.8, 0.3, 1]} />
+          <meshStandardMaterial
+            color="#1a1a1a"
+            metalness={0.3}
+            roughness={0.7}
+          />
+        </mesh>
+
+        {/* Tanque de combustible */}
+        <mesh position={[0, 0.4, -0.5]} castShadow>
+          <boxGeometry args={[0.7, 0.5, 0.8]} />
+          <meshStandardMaterial
+            color="#8b5cf6"
             emissive="#7c3aed"
             emissiveIntensity={0.3}
             metalness={0.8}
@@ -251,28 +272,132 @@ export function BikeController() {
           />
         </mesh>
 
-        {/* Front indicator */}
-        <mesh position={[0, 0.5, -1.2]} castShadow>
-          <boxGeometry args={[0.3, 0.3, 0.3]} />
-          <meshStandardMaterial color="#60a5fa" emissive="#60a5fa" emissiveIntensity={1} />
+        {/* Faro delantero mejorado */}
+        <mesh position={[0, 0.5, -1.3]} castShadow>
+          <boxGeometry args={[0.6, 0.4, 0.3]} />
+          <meshStandardMaterial 
+            color="#60a5fa" 
+            emissive="#60a5fa" 
+            emissiveIntensity={1.5}
+            metalness={1}
+            roughness={0}
+          />
+        </mesh>
+        <pointLight position={[0, 0.5, -1.5]} intensity={3} color="#60a5fa" distance={15} />
+
+        {/* Luces traseras */}
+        <mesh position={[0.3, 0.6, 1.1]} castShadow>
+          <boxGeometry args={[0.15, 0.15, 0.1]} />
+          <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={1} />
+        </mesh>
+        <mesh position={[-0.3, 0.6, 1.1]} castShadow>
+          <boxGeometry args={[0.15, 0.15, 0.1]} />
+          <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={1} />
         </mesh>
 
-        {/* Wheels */}
-        <mesh position={[0.4, -0.3, 0.6]} castShadow rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.3, 0.3, 0.2, 16]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.4} />
-        </mesh>
-        <mesh position={[-0.4, -0.3, 0.6]} castShadow rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.3, 0.3, 0.2, 16]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.4} />
-        </mesh>
-        <mesh position={[0, -0.3, -0.8]} castShadow rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.35, 0.35, 0.25, 16]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.4} />
+        {/* Rueda delantera mejorada */}
+        <group position={[0, -0.3, -0.9]}>
+          <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.4, 0.4, 0.3, 24]} />
+            <meshStandardMaterial color="#1a1a1a" metalness={0.8} roughness={0.3} />
+          </mesh>
+          {/* Disco de freno */}
+          <mesh position={[0.2, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.25, 0.25, 0.05, 16]} />
+            <meshStandardMaterial color="#444444" metalness={0.9} roughness={0.1} />
+          </mesh>
+        </group>
+
+        {/* Rueda trasera derecha */}
+        <group position={[0.45, -0.3, 0.7]}>
+          <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.35, 0.35, 0.25, 24]} />
+            <meshStandardMaterial color="#1a1a1a" metalness={0.8} roughness={0.3} />
+          </mesh>
+          {/* Disco de freno */}
+          <mesh position={[0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.22, 0.22, 0.05, 16]} />
+            <meshStandardMaterial color="#444444" metalness={0.9} roughness={0.1} />
+          </mesh>
+        </group>
+
+        {/* Rueda trasera izquierda */}
+        <group position={[-0.45, -0.3, 0.7]}>
+          <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.35, 0.35, 0.25, 24]} />
+            <meshStandardMaterial color="#1a1a1a" metalness={0.8} roughness={0.3} />
+          </mesh>
+          {/* Disco de freno */}
+          <mesh position={[-0.15, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.22, 0.22, 0.05, 16]} />
+            <meshStandardMaterial color="#444444" metalness={0.9} roughness={0.1} />
+          </mesh>
+        </group>
+
+        {/* Manubrio */}
+        <mesh position={[0, 0.7, -0.8]} castShadow rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.08, 0.08, 1, 8]} />
+          <meshStandardMaterial color="#222222" metalness={0.9} roughness={0.2} />
         </mesh>
 
-        {/* Exhaust particles - only show when moving */}
+        {/* Carenado lateral derecho */}
+        <mesh position={[0.6, 0, 0]} castShadow>
+          <boxGeometry args={[0.1, 0.8, 1.8]} />
+          <meshStandardMaterial
+            color="#6366f1"
+            emissive="#4f46e5"
+            emissiveIntensity={0.2}
+            metalness={0.7}
+            roughness={0.3}
+          />
+        </mesh>
+
+        {/* Carenado lateral izquierdo */}
+        <mesh position={[-0.6, 0, 0]} castShadow>
+          <boxGeometry args={[0.1, 0.8, 1.8]} />
+          <meshStandardMaterial
+            color="#6366f1"
+            emissive="#4f46e5"
+            emissiveIntensity={0.2}
+            metalness={0.7}
+            roughness={0.3}
+          />
+        </mesh>
+
+        {/* Spoiler trasero */}
+        <mesh position={[0, 0.9, 0.9]} castShadow>
+          <boxGeometry args={[0.9, 0.05, 0.4]} />
+          <meshStandardMaterial
+            color="#8b5cf6"
+            emissive="#7c3aed"
+            emissiveIntensity={0.3}
+            metalness={0.8}
+            roughness={0.2}
+          />
+        </mesh>
+
+        {/* Sistema de escape */}
+        <mesh position={[0.4, -0.2, 0.8]} castShadow rotation={[0, 0, Math.PI / 6]}>
+          <cylinderGeometry args={[0.1, 0.12, 0.6, 12]} />
+          <meshStandardMaterial
+            color="#333333"
+            metalness={0.95}
+            roughness={0.1}
+            emissive="#ff6b00"
+            emissiveIntensity={speed > 5 ? 0.3 : 0}
+          />
+        </mesh>
+
+        {/* Exhaust particles - solo mostrar cuando se mueve */}
         {speed > 2 && <BikeExhaust position={exhaustPosition} />}
+        
+        {/* Efecto de velocidad - trail lights */}
+        {speed > 15 && (
+          <>
+            <pointLight position={[0.5, 0, 0.5]} intensity={0.5} color="#a855f7" distance={3} />
+            <pointLight position={[-0.5, 0, 0.5]} intensity={0.5} color="#60a5fa" distance={3} />
+          </>
+        )}
       </group>
     </RigidBody>
   )

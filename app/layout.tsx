@@ -6,11 +6,10 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Suspense } from "react"
-
+import { ChatWidget } from "@/components/chat-witget"
 export const metadata: Metadata = {
   title: "Steven Ortega | Full Stack Developer",
   description: "Full Stack Developer passionate about Artificial Intelligence and technology",
-  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -24,6 +23,7 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             {children}
+            <ChatWidget />
           </ThemeProvider>
         </Suspense>
         <Analytics />

@@ -85,7 +85,6 @@ export function ZoneTrigger({ zone }: ZoneTriggerProps) {
           color="white"
           anchorX="center"
           anchorY="middle"
-          font="/fonts/geist-sans.woff"
         >
           {zone.title}
         </Text>
@@ -97,7 +96,6 @@ export function ZoneTrigger({ zone }: ZoneTriggerProps) {
           color="#e0e0e0"
           anchorX="center"
           anchorY="middle"
-          font="/fonts/geist-sans.woff"
         >
           {zone.name}
         </Text>

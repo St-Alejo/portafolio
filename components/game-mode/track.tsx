@@ -65,15 +65,19 @@ export function Track() {
 
   return (
     <group>
-      {/* Ground plane */}
+      {/* Ground plane - más oscuro y atmosférico */}
       <RigidBody type="fixed" colliders="cuboid">
         <mesh ref={trackRef} rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[60, -0.5, 20]}>
           <planeGeometry args={[300, 200]} />
-          <meshStandardMaterial color="#0a0a0a" roughness={0.9} metalness={0.1} />
+          <meshStandardMaterial 
+            color="#050508" 
+            roughness={0.95} 
+            metalness={0.05}
+          />
         </mesh>
       </RigidBody>
 
-      {/* Track surface segments */}
+      {/* Track surface segments - con textura mejorada */}
       {trackPath.map((point, index) => {
         if (index === 0) return null
         const prevPoint = trackPath[index - 1]
@@ -84,21 +88,43 @@ export function Track() {
 
         return (
           <RigidBody key={index} type="fixed" colliders="cuboid">
-            <mesh position={[midPoint.x, 0.05, midPoint.z]} rotation={[0, -angle, 0]} receiveShadow>
+            <mesh position={[midPoint.x, 0.05, midPoint.z]} rotation={[0, -angle, 0]} receiveShadow castShadow>
               <boxGeometry args={[10, 0.1, length]} />
               <meshStandardMaterial
                 color="#1a1a2e"
-                roughness={0.7}
-                metalness={0.2}
-                emissive="#16213e"
-                emissiveIntensity={0.1}
+                roughness={0.6}
+                metalness={0.3}
+                emissive="#2a1a4e"
+                emissiveIntensity={0.15}
               />
             </mesh>
+            
+            {/* Líneas laterales de pista */}
+            {index % 2 === 0 && (
+              <>
+                <mesh position={[midPoint.x + 4.8, 0.11, midPoint.z]} rotation={[0, -angle, 0]}>
+                  <boxGeometry args={[0.3, 0.05, length]} />
+                  <meshStandardMaterial
+                    color="#ffffff"
+                    emissive="#ffffff"
+                    emissiveIntensity={0.3}
+                  />
+                </mesh>
+                <mesh position={[midPoint.x - 4.8, 0.11, midPoint.z]} rotation={[0, -angle, 0]}>
+                  <boxGeometry args={[0.3, 0.05, length]} />
+                  <meshStandardMaterial
+                    color="#ffffff"
+                    emissive="#ffffff"
+                    emissiveIntensity={0.3}
+                  />
+                </mesh>
+              </>
+            )}
           </RigidBody>
         )
       })}
 
-      {/* Track boundaries - Left side */}
+      {/* Track boundaries - Left side con efecto neón */}
       {trackPath.map((point, index) => {
         if (index === 0 || index % 3 !== 0) return null
         const nextIndex = Math.min(index + 1, trackPath.length - 1)
@@ -108,21 +134,25 @@ export function Track() {
 
         return (
           <RigidBody key={`wall-left-${index}`} type="fixed" colliders="cuboid">
-            <mesh position={[wallPos.x, 2, wallPos.z]}>
-              <boxGeometry args={[2, 4, 2]} />
+            <mesh position={[wallPos.x, 2, wallPos.z]} castShadow>
+              <boxGeometry args={[1.5, 4, 1.5]} />
               <meshStandardMaterial
                 color="#16213e"
                 emissive="#7c3aed"
-                emissiveIntensity={0.2}
+                emissiveIntensity={0.4}
                 transparent
-                opacity={0.6}
+                opacity={0.7}
+                roughness={0.3}
+                metalness={0.7}
               />
             </mesh>
+            {/* Luz superior del poste */}
+            <pointLight position={[wallPos.x, 4.5, wallPos.z]} intensity={0.5} color="#7c3aed" distance={8} />
           </RigidBody>
         )
       })}
 
-      {/* Track boundaries - Right side */}
+      {/* Track boundaries - Right side con efecto neón */}
       {trackPath.map((point, index) => {
         if (index === 0 || index % 3 !== 0) return null
         const nextIndex = Math.min(index + 1, trackPath.length - 1)
@@ -132,39 +162,84 @@ export function Track() {
 
         return (
           <RigidBody key={`wall-right-${index}`} type="fixed" colliders="cuboid">
-            <mesh position={[wallPos.x, 2, wallPos.z]}>
-              <boxGeometry args={[2, 4, 2]} />
+            <mesh position={[wallPos.x, 2, wallPos.z]} castShadow>
+              <boxGeometry args={[1.5, 4, 1.5]} />
               <meshStandardMaterial
                 color="#16213e"
                 emissive="#a855f7"
-                emissiveIntensity={0.2}
+                emissiveIntensity={0.4}
                 transparent
-                opacity={0.6}
+                opacity={0.7}
+                roughness={0.3}
+                metalness={0.7}
               />
             </mesh>
+            {/* Luz superior del poste */}
+            <pointLight position={[wallPos.x, 4.5, wallPos.z]} intensity={0.5} color="#a855f7" distance={8} />
           </RigidBody>
         )
       })}
 
-      {/* Start/Finish line */}
-      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[10, 2]} />
-        <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.5} />
+      {/* Start/Finish line mejorada */}
+      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[10, 3]} />
+        <meshStandardMaterial 
+          color="#ffffff" 
+          emissive="#ffffff" 
+          emissiveIntensity={0.8}
+          roughness={0.5}
+        />
       </mesh>
 
       {/* Checkered pattern on start line */}
       {[...Array(5)].map((_, i) =>
-        [...Array(2)].map((_, j) => (
+        [...Array(3)].map((_, j) => (
           <mesh
             key={`checker-${i}-${j}`}
-            position={[-4 + i * 2 + (j % 2), 0.12, -0.5 + j]}
+            position={[-4 + i * 2 + (j % 2), 0.12, -1 + j]}
             rotation={[-Math.PI / 2, 0, 0]}
+            receiveShadow
           >
             <planeGeometry args={[1, 1]} />
             <meshStandardMaterial color="#000000" />
           </mesh>
         )),
       )}
+
+      {/* Arco de salida decorativo */}
+      <group position={[0, 0, -2]}>
+        <mesh position={[-6, 3, 0]} castShadow>
+          <boxGeometry args={[1, 6, 1]} />
+          <meshStandardMaterial
+            color="#1a1a2e"
+            emissive="#60a5fa"
+            emissiveIntensity={0.5}
+            metalness={0.8}
+            roughness={0.2}
+          />
+        </mesh>
+        <mesh position={[6, 3, 0]} castShadow>
+          <boxGeometry args={[1, 6, 1]} />
+          <meshStandardMaterial
+            color="#1a1a2e"
+            emissive="#60a5fa"
+            emissiveIntensity={0.5}
+            metalness={0.8}
+            roughness={0.2}
+          />
+        </mesh>
+        <mesh position={[0, 6, 0]} castShadow>
+          <boxGeometry args={[13, 1, 1]} />
+          <meshStandardMaterial
+            color="#1a1a2e"
+            emissive="#60a5fa"
+            emissiveIntensity={0.5}
+            metalness={0.8}
+            roughness={0.2}
+          />
+        </mesh>
+        <pointLight position={[0, 6, 0]} intensity={2} color="#60a5fa" distance={20} />
+      </group>
 
       {/* Zone triggers with particles */}
       {ZONES_CONFIG.map((zone) => (
@@ -174,12 +249,21 @@ export function Track() {
         </group>
       ))}
 
-      {/* Decorative elements - Pit lane markers */}
+      {/* Decorative elements - Pit lane markers mejorados */}
       {[...Array(10)].map((_, i) => (
-        <mesh key={`pit-${i}`} position={[-5, 0.5, i * 3 - 10]} castShadow>
-          <boxGeometry args={[0.5, 1, 0.5]} />
-          <meshStandardMaterial color="#ff6b6b" emissive="#ff6b6b" emissiveIntensity={0.5} />
-        </mesh>
+        <group key={`pit-${i}`} position={[-8, 0, i * 5 - 15]}>
+          <mesh position={[0, 1, 0]} castShadow>
+            <cylinderGeometry args={[0.3, 0.3, 2, 8]} />
+            <meshStandardMaterial 
+              color="#ff6b6b" 
+              emissive="#ff6b6b" 
+              emissiveIntensity={0.6}
+              metalness={0.5}
+              roughness={0.3}
+            />
+          </mesh>
+          <pointLight position={[0, 2, 0]} intensity={0.3} color="#ff6b6b" distance={5} />
+        </group>
       ))}
     </group>
   )

@@ -1,107 +1,156 @@
-"use client"
+"use client";
 
-import { Canvas } from "@react-three/fiber"
-import { Suspense } from "react"
-import { Physics } from "@react-three/rapier"
-import { Environment, Sky } from "@react-three/drei"
-import { Track } from "./track"
-import { BikeController } from "./bike-controller"
-import { CameraRig } from "./camera-rig"
-import { Effects } from "./effects"
-import { useGameStore } from "@/lib/game-store"
-import { PERFORMANCE_CONFIG } from "@/lib/game-config"
+import React, { useState, useEffect, useRef } from "react";
+import { MessageSquare, Send, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-function LoadingFallback() {
-  return (
-    <mesh>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="#a855f7" />
-    </mesh>
-  )
-}
+type Message = {
+  id: string;
+  text: string;
+  sender: "user" | "bot";
+};
 
-// Piso temporal para debug
-function DebugFloor() {
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-      <planeGeometry args={[100, 100]} />
-      <meshStandardMaterial color="#1a1a1a" />
-    </mesh>
-  )
-}
+export default function ChatWidget() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-function Scene() {
-  const lowGraphics = useGameStore((state) => state.lowGraphics)
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      setMessages([
+        { id: "1", text: "👋 Hola, soy tu asistente virtual. ¿En qué puedo ayudarte?", sender: "bot" },
+      ]);
+    }
+  }, [isOpen]);
 
-  return (
-    <>
-      {/* Lighting */}
-      <ambientLight intensity={0.8} />
-      <directionalLight
-        position={[10, 20, 10]}
-        intensity={2}
-        castShadow={!lowGraphics}
-        shadow-mapSize-width={
-          lowGraphics ? PERFORMANCE_CONFIG.shadowMapSize.low : PERFORMANCE_CONFIG.shadowMapSize.high
-        }
-        shadow-mapSize-height={
-          lowGraphics ? PERFORMANCE_CONFIG.shadowMapSize.low : PERFORMANCE_CONFIG.shadowMapSize.high
-        }
-        shadow-camera-far={200}
-        shadow-camera-left={-100}
-        shadow-camera-right={100}
-        shadow-camera-top={100}
-        shadow-camera-bottom={-100}
-      />
-      <pointLight position={[0, 10, 0]} intensity={1} color="#60a5fa" />
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-      {/* Environment */}
-      <Sky sunPosition={[100, 20, 100]} />
-      <Environment preset="night" />
+  const handleSendMessage = async () => {
+    if (!input.trim()) return;
 
-      {/* Fog for depth */}
-      <fog attach="fog" args={["#0a0a0a", 50, 300]} />
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      text: input,
+      sender: "user",
+    };
 
-      {/* DEBUG: Piso temporal */}
-      <DebugFloor />
-      
-      {/* Grid helper for reference */}
-      <gridHelper args={[100, 100, "#333333", "#555555"]} position={[0, 0.01, 0]} />
+    setMessages((prev) => [...prev, newMessage]);
+    setInput("");
+    setIsLoading(true);
 
-      {/* Game objects */}
-      <Track />
-      <BikeController />
-    </>
-  )
-}
+    try {
+      // 💡 Aquí va tu webhook de n8n
+      const response = await fetch("https://alejandro1508.app.n8n.cloud/webhook/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatInput: input }),
+      });
 
-export function GameScene() {
-  const lowGraphics = useGameStore((state) => state.lowGraphics)
+      if (!response.ok) throw new Error(`Error ${response.status}`);
 
-  // Detect mobile/low-power devices
-  const isMobile =
-    typeof window !== "undefined" &&
-    (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= PERFORMANCE_CONFIG.mobileMaxConcurrency))
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = { reply: "⚠️ El servidor no devolvió una respuesta válida." };
+      }
+
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: data.reply || "⚠️ Sin respuesta del bot.",
+        sender: "bot",
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Error:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          text: "❌ Error al conectar con el servidor.",
+          sender: "bot",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="fixed inset-0 w-full h-full">
-      <Canvas
-        shadows={!lowGraphics && !isMobile}
-        camera={{ position: [0, 8, 15], fov: 75, near: 0.1, far: 1000 }}
-        gl={{
-          antialias: !lowGraphics && !isMobile,
-          powerPreference: isMobile ? "low-power" : "high-performance",
-        }}
-      >
-        <Suspense fallback={<LoadingFallback />}>
-          <Physics gravity={[0, -9.81, 0]} debug={false}>
-            <Scene />
-            <CameraRig />
-          </Physics>
-          {!lowGraphics && <Effects />}
-        </Suspense>
-      </Canvas>
+    <div className="fixed bottom-6 right-6 z-50">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="bg-white w-80 shadow-2xl rounded-2xl border border-gray-200 overflow-hidden flex flex-col"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between bg-indigo-600 text-white p-3">
+              <span className="font-semibold text-sm">Asistente Virtual</span>
+              <button onClick={() => setIsOpen(false)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Mensajes */}
+            <div className="flex-1 p-3 space-y-2 overflow-y-auto bg-gray-50">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`p-2 rounded-lg text-sm max-w-[80%] ${
+                    msg.sender === "user"
+                      ? "bg-indigo-100 self-end ml-auto"
+                      : "bg-white border text-gray-800"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+              {isLoading && <div className="text-gray-400 text-xs italic">Escribiendo...</div>}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="flex items-center border-t bg-white p-2">
+              <input
+                type="text"
+                className="flex-1 border border-gray-300 rounded-full px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                placeholder="Escribe un mensaje..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={isLoading}
+                className="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full transition"
+              >
+                <Send size={16} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Botón flotante */}
+      {!isOpen && (
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0 }}
+          onClick={() => setIsOpen(true)}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg"
+        >
+          <MessageSquare size={22} />
+        </motion.button>
+      )}
     </div>
-  )
+  );
 }
