@@ -56,7 +56,7 @@ export function HeroSection() {
                 className="neon-glow-purple hover:scale-105 transition-all duration-300 bg-transparent"
                 asChild
               >
-                <a href="" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.linkedin.com/in/steven-ortega-046874339/" target="_blank" rel="noopener noreferrer">
                   <Linkedin className="mr-2 h-5 w-5" />
                   LinkedIn
                 </a>
@@ -67,7 +67,7 @@ export function HeroSection() {
                 className="neon-glow-blue hover:scale-105 transition-all duration-300 bg-transparent"
                 asChild
               >
-                <a href="" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/St-Alejo" target="_blank" rel="noopener noreferrer">
                   <Github className="mr-2 h-5 w-5" />
                   GitHub
                 </a>
@@ -78,7 +78,7 @@ export function HeroSection() {
                 className="neon-glow-cyan hover:scale-105 transition-all duration-300 bg-transparent"
                 asChild
               >
-                <a href="" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/573187993643" target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="mr-2 h-5 w-5" />
                   WhatsApp
                 </a>

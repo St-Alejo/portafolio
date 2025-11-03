@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid md:grid-cols-2 gap-8 mb-8">
           {/* Left side - Description */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold gradient-text">footer</h3>
+            <h3 className="text-xl font-bold gradient-text">Steven Ortega</h3>
             <p className="text-muted-foreground leading-relaxed text-pretty">
               A Frontend Focused Web Developer building the Frontend of Websites and Web Applications that leads to the
               success of the overall product
@@ -19,26 +19,29 @@ export function Footer() {
             <h3 className="text-xl font-bold gradient-text mb-4">Social</h3>
             <div className="flex gap-4">
               <a
-                href=""
+                href="https://www.linkedin.com/in/steven-ortega-046874339/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-lg bg-primary/10 hover:bg-primary/20 hover:neon-glow-purple transition-all duration-300"
+                aria-label="LinkedIn"
               >
                 <Linkedin className="h-6 w-6" />
               </a>
               <a
-                href=""
+                href="https://wa.me/573187993643"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-lg bg-primary/10 hover:bg-primary/20 hover:neon-glow-blue transition-all duration-300"
+                aria-label="WhatsApp"
               >
                 <MessageCircle className="h-6 w-6" />
               </a>
               <a
-                href=""
+                href="https://github.com/St-Alejo"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-lg bg-primary/10 hover:bg-primary/20 hover:neon-glow-cyan transition-all duration-300"
+                aria-label="GitHub"
               >
                 <Github className="h-6 w-6" />
               </a>

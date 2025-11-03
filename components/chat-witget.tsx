@@ -148,7 +148,7 @@ export function ChatWidget() {
                 exit={{ opacity: 0, x: 10 }}
                 className="absolute bottom-full right-0 mb-2 whitespace-nowrap"
               >
-                <div className="relative bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+                <div className="relative bg-linear-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
                   <p className="text-sm font-medium">Habla conmigo 😄</p>
                   <button
                     onClick={() => setShowTooltip(false)}
@@ -167,7 +167,7 @@ export function ChatWidget() {
             onClick={() => setIsOpen(!isOpen)}
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
-            className="relative w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center group"
+            className="relative w-14 h-14 rounded-full bg-linear-to-r from-purple-600 to-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center group"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
@@ -212,7 +212,7 @@ export function ChatWidget() {
           >
             <div className="bg-background border border-border rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl">
               {/* Header */}
-              <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4">
+              <div className="bg-linear-to-r from-purple-600 to-blue-600 text-white p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
@@ -247,7 +247,7 @@ export function ChatWidget() {
                       <div
                         className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                           message.sender === "user"
-                            ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                            ? "bg-linear-to-r from-purple-600 to-blue-600 text-white"
                             : "bg-background border border-border"
                         }`}
                       >
@@ -298,7 +298,7 @@ export function ChatWidget() {
                     onClick={handleSendMessage}
                     size="icon"
                     disabled={isLoading || !inputValue.trim()}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    className="bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
