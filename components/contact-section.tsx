@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +14,8 @@ export function ContactSection() {
     email: "",
     message: "",
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState("")
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -35,10 +36,39 @@ export function ContactSection() {
     return () => observer.disconnect()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Add form submission logic
-    console.log("Form submitted:", formData)
+    setIsSubmitting(true)
+
+    const formDataToSend = new FormData()
+    formDataToSend.append("access_key", "5bb6b96d-0ba8-46f8-9101-d7ff0f552d3c")
+    formDataToSend.append("name", formData.name)
+    formDataToSend.append("email", formData.email)
+    formDataToSend.append("message", formData.message)
+    formDataToSend.append("subject", "Nuevo mensaje desde tu portafolio")
+    formDataToSend.append("from_name", formData.name)
+    formDataToSend.append("redirect", "https://web3forms.com/success")
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formDataToSend
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSubmitMessage("¡Mensaje enviado exitosamente!")
+        setFormData({ name: "", email: "", message: "" })
+      } else {
+        setSubmitMessage("Error al enviar el mensaje. Intenta nuevamente.")
+      }
+    } catch (error) {
+      setSubmitMessage("Error al enviar el mensaje. Intenta nuevamente.")
+      console.error("Error:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -105,9 +135,16 @@ export function ContactSection() {
                 type="submit"
                 size="lg"
                 className="w-full gradient-purple-blue text-white hover:scale-105 transition-all duration-300 neon-glow-purple"
+                disabled={isSubmitting}
               >
-                Send Message
+                {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
+
+              {submitMessage && (
+                <p className={`text-center ${submitMessage.includes("exitosamente") ? "text-green-500" : "text-red-500"}`}>
+                  {submitMessage}
+                </p>
+              )}
             </form>
           </div>
         </Card>
