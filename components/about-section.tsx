@@ -2,20 +2,21 @@
 
 import { useEffect, useRef } from "react"
 import { Card } from "@/components/ui/card"
+import Image from "next/image"
 
 const skills = [
-  { name: "HTML", icon: "🌐" },
-  { name: "CSS", icon: "🎨" },
-  { name: "JavaScript", icon: "⚡" },
-  { name: "React", icon: "⚛️" },
-  { name: "Node.js", icon: "🟢" },
-  { name: "TypeScript", icon: "📘" },
-  { name: "Python", icon: "🐍" },
-  { name: "Spring Boot", icon: "🍃" },
-  { name: "MongoDB", icon: "🍃" },
-  { name: "PostgreSQL", icon: "🐘" },
-  { name: "Docker", icon: "🐳" },
-  { name: "Git", icon: "📦" },
+  { name: "HTML", icon: "/iconos/html-5.png" },
+  { name: "CSS", icon: "/iconos/css-3.png" },
+  { name: "JavaScript", icon: "/iconos/js.png" },
+  { name: "React", icon: "/iconos/react.png" },
+  { name: "Node.js", icon: "/iconos/programacion.png" },
+  { name: "TypeScript", icon: "/iconos/types.png" },
+  { name: "Python", icon: "/iconos/piton.png" },
+  { name: "Spring Boot", icon: "/iconos/springboot.png" },
+  { name: "MongoDB", icon: "/iconos/mongodb.png" },
+  { name: "PostgreSQL", icon: "/iconos/postgres.png" },
+  { name: "Docker", icon: "/iconos/docker.png" },
+  { name: "Git", icon: "/iconos/git.png" },
 ]
 
 export function AboutSection() {
@@ -86,7 +87,14 @@ export function AboutSection() {
                   className="p-4 text-center hover:scale-105 hover:neon-glow-purple transition-all duration-300 cursor-pointer bg-card/50 backdrop-blur-sm"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <div className="text-4xl mb-2">{skill.icon}</div>
+                  <div className="relative w-12 h-12 mx-auto mb-2">
+                    <Image
+                      src={skill.icon}
+                      alt={`${skill.name} icon`}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
                   <p className="font-medium text-sm">{skill.name}</p>
                 </Card>
               ))}

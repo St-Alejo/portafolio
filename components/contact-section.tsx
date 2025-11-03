@@ -84,7 +84,7 @@ export function ContactSection() {
           </p>
         </div>
 
-        <Card className="max-w-2xl mx-auto animate-on-scroll gradient-purple-blue p-[2px]">
+        <Card className="max-w-2xl mx-auto animate-on-scroll gradient-purple-blue p-0.5">
           <div className="bg-card/90 backdrop-blur-sm rounded-lg p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
