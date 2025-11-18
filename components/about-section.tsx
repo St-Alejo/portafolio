@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { Card } from "@/components/ui/card"
 import Image from "next/image"
 
 const skills = [
@@ -18,6 +17,29 @@ const skills = [
   { name: "Docker", icon: "/iconos/docker.png" },
   { name: "Git", icon: "/iconos/git.png" },
 ]
+
+/**
+ * CardBase: reemplazo ligero del Card original sin importar desde ui/.
+ * Conserva la estética con Tailwind: borde, fondo, sombra, radio y color de texto.
+ */
+function CardBase({
+  className = "",
+  children,
+  style,
+}: {
+  className?: string
+  children: React.ReactNode
+  style?: React.CSSProperties
+}) {
+  return (
+    <div
+      className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`}
+      style={style}
+    >
+      {children}
+    </div>
+  )
+}
 
 export function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -82,7 +104,7 @@ export function AboutSection() {
             <h3 className="text-2xl font-bold gradient-text mb-6">My Skills</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {skills.map((skill, index) => (
-                <Card
+                <CardBase
                   key={skill.name}
                   className="p-4 text-center hover:scale-105 hover:neon-glow-purple transition-all duration-300 cursor-pointer bg-card/50 backdrop-blur-sm"
                   style={{ animationDelay: `${index * 50}ms` }}
@@ -96,7 +118,7 @@ export function AboutSection() {
                     />
                   </div>
                   <p className="font-medium text-sm">{skill.name}</p>
-                </Card>
+                </CardBase>
               ))}
             </div>
           </div>
