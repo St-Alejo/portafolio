@@ -63,7 +63,7 @@ export function ExperienceSection() {
           {experiences.map((exp, index) => (
             <Card
               key={exp.id}
-              className="animate-on-scroll gradient-purple-blue p-[2px] hover:scale-102 hover:neon-glow-blue transition-all duration-300"
+              className="animate-on-scroll gradient-purple-blue p-0.5 hover:scale-102 hover:neon-glow-blue transition-all duration-300"
               style={{ animationDelay: `${index * 150}ms` }}
             >
               <div className="bg-card rounded-lg p-6">
